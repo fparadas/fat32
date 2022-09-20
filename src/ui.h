@@ -8,3 +8,4 @@ int touch();
 int mkdir();
 int rm();
 int rmdir();
+int recover();
