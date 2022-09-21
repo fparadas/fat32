@@ -1,56 +1,65 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include "types.h"
 
-struct BS_BPB {
-	uint8_t BS_jmpBoot[3]; //1-3
-	uint8_t BS_OEMName[8]; //4-11
-	uint16_t BPB_BytsPerSec;//12-13
-	uint8_t BPB_SecPerClus; //14
-	uint16_t BPB_RsvdSecCnt; //15-16
-	uint8_t BPB_NumFATs; //17
-	uint16_t BPB_RootEntCnt; //18-19
-	uint16_t BPB_TotSec16; //20-21
-	uint8_t BPB_Media; //22
-	uint16_t BPB_FATSz16; //23-24
-	uint16_t BPB_SecPerTrk; //25-26
-	uint16_t BPB_NumHeads; //27-28
-	uint32_t BPB_HiddSec; //29-32
-	uint32_t BPB_TotSec32; //33-36
-	uint32_t BPB_FATSz32 ; //37-40
-	uint16_t BPB_ExtFlags ; //41-42
-	uint16_t BPB_FSVer ; //43-44
-	uint32_t BPB_RootClus ;//45-48
-	uint16_t BPB_FSInfo ; //49-50
-	uint16_t BPB_BkBootSec ;//51-52
-	uint8_t BPB_Reserved[12]; //53-64
-	uint8_t BS_DrvNum ;//65
-	uint8_t BS_Reserved1 ;//66
-	uint8_t BS_BootSig ;//67
-	uint32_t BS_VolID ;//68-71
-	uint8_t BS_VolLab[11]; //72-82
-	uint8_t BS_FilSysType[8]; //83-89
+/* FATFS.flag */
+#define	FA_OPENED	0x01
+#define	FA_WPRT		0x02
+#define	FA__WIP		0x40
 
 
-} __attribute__((packed));
+/* FILINFO.fattrib */
+#define	AM_RDO	0x01	/* Read only */
+#define	AM_HID	0x02	/* Hidden */
+#define	AM_SYS	0x04	/* System */
+#define	AM_VOL	0x08	/* Volume label */
+#define AM_LFN	0x0F	/* LFN entry */
+#define AM_DIR	0x10	/* Directory */
+#define AM_ARC	0x20	/* Archive */
+#define AM_MASK	0x3F	/* Mask of defined bits */
 
-struct DIR_ENTRY {
-    uint8_t DIR_Name[11];
-    uint8_t DIR_Attr;
-    uint8_t DIR_NTRes;
-    uint8_t DIR_CrtTimeTenth;
-    uint16_t DIR_CrtTime;
-    uint16_t DIR_CrtDate;
-    uint16_t DIR_LstAccDate;
-    uint8_t DIR_FstClusHI[2];
-    uint16_t DIR_WrtTime;
-    uint16_t DIR_WrtDate;
-    uint8_t DIR_FstClusLO[2];
-    uint32_t DIR_FileSize;
-} __attribute__((packed));
+typedef struct {
+	BYTE	fs_type;	/* FAT sub type */
+	BYTE	flag;		/* File status flags */
+	BYTE	csize;		/* Number of sectors per cluster */
+	BYTE	pad1;
+	WORD	n_rootdir;	/* Number of root directory entries (0 on FAT32) */
+	DWORD	n_fatent;	/* Number of FAT entries (= number of clusters + 2) */
+	DWORD	fatbase;	/* FAT start sector */
+	DWORD	dirbase;	/* Root directory start sector (Cluster# on FAT32) */
+	DWORD	database;	/* Data start sector */
+	DWORD	fptr;		/* File R/W pointer */
+	DWORD	fsize;		/* File size */
+	DWORD	org_clust;	/* File start cluster */
+	DWORD	curr_clust;	/* File current cluster */
+	DWORD	dsect;		/* File current data sector */
+} FATFS;
 
-// funções disponibilizadas para mexer em arquivos
-int ffopen();
-int ffclose();
-int ffseek();
-int ffread();
-int ffwrite();
+typedef struct {
+	WORD	index;		/* Current read/write index number */
+	BYTE*	fn;			/* Pointer to the SFN (in/out) {file[8],ext[3],status[1]} */
+	DWORD	sclust;		/* Table start cluster (0:Static table) */
+	DWORD	clust;		/* Current cluster */
+	DWORD	sect;		/* Current sector */
+} DIR;
+
+typedef struct {
+	DWORD	fsize;		/* File size */
+	WORD	fdate;		/* Last modified date */
+	WORD	ftime;		/* Last modified time */
+	BYTE	fattrib;	/* Attribute */
+	char	fname[13];	/* File name */
+} FILINFO;
+
+
+int f_open (FIL* fp, const char* path, BYTE mode);				/* Open or create a file */
+int f_close (FIL* fp);											/* Close an open file object */
+int f_read (FIL* fp, void* buff, UINT btr, UINT* br);			/* Read data from the file */
+int f_write (FIL* fp, const void* buff, UINT btw, UINT* bw);	/* Write data to the file */
+int f_opendir (DIR* dp, const char* path);						/* Open a directory */
+int f_closedir (DIR* dp);										/* Close an open directory */
+int f_readdir (DIR* dp, FILINFO* fno);							/* Read a directory item */
+int f_mkdir (const char* path);								/* Create a sub directory */
+int f_unlink (const char* path);								/* Delete an existing file or directory */
+int f_mount (FATFS* fs, const char* path, BYTE opt);			/* Mount/Unmount a logical drive */
+int f_chmod (const char* path, BYTE attr, BYTE mask);			/* Change attribute of a file/dir */
