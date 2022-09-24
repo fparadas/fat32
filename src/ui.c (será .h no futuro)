@@ -90,6 +90,7 @@ int main(int argc, const char *argv[])
 }
 
 // funções de integração com o usuário
+/*
 int ls();  //done
 int cd();   //done
 int touch();
@@ -97,3 +98,4 @@ int mkdir();
 int rm();
 int rmdir();
 int recover();
+*/
