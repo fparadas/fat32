@@ -34,59 +34,71 @@ void _ls(const char *dir,int op_a,int op_l)
 	if(!op_l)
 	printf("\n");
 }
+
+void touch(char nome_arquivo[]){
+    FILE *fp;
+    fp = fopen(nome_arquivo, "w");
+    fclose(fp);
+}
+
 int main(int argc, const char *argv[])
 {
     int escolha;
     char s[100];
+    char nome_arquivo[50];
 
     printf("Bem vindo ao trabalho 2 de FSO!\n");
 
     while(1){
-    printf("\n1. ls\n2. cd\n3. sair\nDigite a escolha: ");
+    printf("\n1. ls\n2. cd\n3. criar um arquivo (touch)\n4. sair\nDigite a escolha: ");
     scanf("%d", &escolha);
 
-
-        switch(escolha){
-            case 1:
-                if (argc == 1)
+    switch(escolha){
+        case 1:
+            if (argc == 1)
+            {
+                _ls(".",0,0);
+            }
+            else if (argc == 2)
+            {
+                if (argv[1][0] == '-')
                 {
-                    _ls(".",0,0);
-                }
-                else if (argc == 2)
-                {
-                    if (argv[1][0] == '-')
-                    {
-                        //Checking if option is passed
-                        //Options supporting: a, l
-                        int op_a = 0, op_l = 0;
-                        char *p = (char*)(argv[1] + 1);
-                        while(*p){
-                            if(*p == 'a') op_a = 1;
-                            else if(*p == 'l') op_l = 1;
-                            else{
-                                perror("Option not available");
-                                exit(EXIT_FAILURE);
-                            }
-                            p++;
+                    //Checking if option is passed
+                    //Options supporting: a, l
+                    int op_a = 0, op_l = 0;
+                    char *p = (char*)(argv[1] + 1);
+                    while(*p){
+                        if(*p == 'a') op_a = 1;
+                        else if(*p == 'l') op_l = 1;
+                        else{
+                            perror("Option not available");
+                            exit(EXIT_FAILURE);
                         }
-                        _ls(".",op_a,op_l);
+                        p++;
                     }
-                }break;
-            case 2:
-                //Printing the current working directory
-                printf("%s\n",getcwd(s,100));
-                //Changing the current working directory to the previous directory
-                chdir("..");
-                //Printing the now current working directory
-                printf("%s\n",getcwd(s,100));
-                break;
-            case 3:
-                printf("\nvoce saiu do programa!\n");
-                return 0;
+                    _ls(".",op_a,op_l);
+                }
+            }break;
+        case 2:
+            //Printing the current working directory
+            printf("%s\n",getcwd(s,100));
+            //Changing the current working directory to the previous directory
+            chdir("..");
+            //Printing the now current working directory
+            printf("%s\n",getcwd(s,100));
+            break;
+        case 3:
+            printf("Digite o nome do arquivo: ");
+            scanf("%s", nome_arquivo);
+            touch(nome_arquivo);
+            break;
+        case 4:
+            printf("\nvoce saiu do programa!\n");
+            return 0;
         }
     }
-    
-	return 0;
+
+    return 0;
 }
 
 // funções de integração com o usuário
