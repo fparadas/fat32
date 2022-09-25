@@ -38,6 +38,27 @@ void _ls(const char *dir,int op_a,int op_l)
 void touch(char nome_arquivo[]){
     FILE *fp;
     fp = fopen(nome_arquivo, "w");
+    if(fp == NULL){
+        printf("Erro abrindo o arquivo!\n");
+        exit(1);
+    }
+    fclose(fp);
+}
+
+void write_in_txtFile(char nome_arquivo[]){
+    FILE *fp;
+    fp = fopen (nome_arquivo, "w");
+    if(fp == NULL){
+        printf("Erro abrindo o arquivo!\n");
+        exit(1);
+    }
+
+    char texto[1000];
+    printf("Digite o texto a ser escrito em '%s': ", nome_arquivo);
+    getchar();
+    fgets(texto, 1000, stdin);
+    fprintf(fp, "%s", texto);
+
     fclose(fp);
 }
 
@@ -56,17 +77,17 @@ void rm(char nome_arquivo[]){
 
 int main(int argc, const char *argv[])
 {
-    int escolha;
+    int escolha_switch, escolha_touch;
     char s[100];
-    char nome_arquivo[50];
+    char nome_arquivo[30];
 
     printf("Bem vindo ao trabalho 2 de FSO!\n");
 
     while(1){
-    printf("\n1. ls\n2. cd\n3. criar um arquivo (touch)\n4. sair\nDigite a escolha: ");
-    scanf("%d", &escolha);
+    printf("\n1. ls\n2. cd\n3. manipular arquivo\n4. sair\nDigite a escolha: ");
+    scanf("%d", &escolha_switch);
 
-    switch(escolha){
+    switch(escolha_switch){
         case 1:
             if (argc == 1)
             {
@@ -101,10 +122,22 @@ int main(int argc, const char *argv[])
             printf("%s\n",getcwd(s,100));
             break;
         case 3:
-            printf("Digite o nome do arquivo: ");
-            scanf("%s", nome_arquivo);
-            touch(nome_arquivo);
-            break;
+            printf("\n1. criar arquivo vazio (touch)\n2. escrever em arquivo existente\n3. deletar arquivo\nDigite sua escolha: ");
+            scanf("%d", &escolha_touch);
+            if(escolha_touch == 1){
+                printf("Digite o nome do arquivo: ");
+                scanf("%s", nome_arquivo);
+                touch(nome_arquivo);
+                break;
+            }else if(escolha_touch == 2){
+                printf("Digite o nome do arquivo: ");
+                scanf("%s", nome_arquivo);
+                write_in_txtFile(nome_arquivo);
+                break;
+                //case 3:
+                //ainda não implementado
+                //código do comando 'rm'
+            }
         case 4:
             printf("Digite o nome do arquivo: ");
             scanf("%s", nome_arquivo);
@@ -112,7 +145,7 @@ int main(int argc, const char *argv[])
         case 5:
             printf("\nvoce saiu do programa!\n");
             return 0;
-        }
+    }
     }
 
     return 0;
