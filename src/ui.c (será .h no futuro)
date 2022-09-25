@@ -105,8 +105,8 @@ int main(int argc, const char *argv[])
 /*
 int ls();  //done
 int cd();   //done
-int touch();
-int mkdir();
+int touch();	//done
+int mkdir();	//done
 int rm();
 int rmdir();
 int recover();
