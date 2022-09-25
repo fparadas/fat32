@@ -41,6 +41,19 @@ void touch(char nome_arquivo[]){
     fclose(fp);
 }
 
+void rm(char nome_arquivo[]){
+    const uint8_t mode = 'r'
+    int n = 50
+
+    TFFile fileExist = tf_fnopen(*filename, *mode, n)
+
+    if(fileExist == NULL){
+        perror("File does not exist");
+    }else{
+        tf_remove(*filename)
+    }
+}
+
 int main(int argc, const char *argv[])
 {
     int escolha;
@@ -93,6 +106,10 @@ int main(int argc, const char *argv[])
             touch(nome_arquivo);
             break;
         case 4:
+            printf("Digite o nome do arquivo: ");
+            scanf("%s", nome_arquivo);
+            rm(nome_arquivo);
+        case 5:
             printf("\nvoce saiu do programa!\n");
             return 0;
         }
