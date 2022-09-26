@@ -2,6 +2,8 @@
 #include <dirent.h>
 #include <errno.h>
 #include <stdlib.h>
+#include <stdint.h>
+#include "fat32.h"
 
 void _ls(const char *dir,int op_a,int op_l)
 {
@@ -63,15 +65,14 @@ void write_in_txtFile(char nome_arquivo[]){
 }
 
 void rm(char nome_arquivo[]){
-    const uint8_t mode = 'r'
-    int n = 30
+    const uint8_t mode = 'r';
+    int n = 30;
 
-    TFFile fileExist = tf_fnopen(*filename, *mode, n)
 
-    if(fileExist == NULL){
+    if(tf_fnopen(nome_arquivo, mode, n) == NULL){
         perror("File does not exist");
     }else{
-        tf_remove(*filename)
+        tf_remove(nome_arquivo);
     }
 }
 
